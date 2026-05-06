@@ -1,0 +1,297 @@
+:root {
+  --primary-glow: #ff2a75;
+  --secondary-glow: #9e0059;
+  --bg-core: #1a0010;
+  --bg-outer: #000000;
+  --door-wood: #2c0b1c;
+  --door-border: #4d1533;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+  background: radial-gradient(circle at center, var(--bg-core) 0%, var(--bg-outer) 100%);
+  font-family: 'Inter', sans-serif;
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  perspective: 1000px; /* Perspective for the tsunami */
+}
+
+/* Hidden elements for state logic */
+.hidden-toggle {
+  display: none;
+}
+
+/* Tsunami Particle System (Pure CSS) */
+.tsunami-container {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  z-index: 10;
+  pointer-events: none;
+  transform-style: preserve-3d;
+}
+
+.p {
+  position: absolute;
+  font-size: 30px;
+  top: 0; left: 0;
+  /* initial hidden state */
+  transform: translate3d(0, 0, -2000px) scale(0);
+  opacity: 0;
+}
+
+/* When the checkbox is checked, trigger the tsunami animation on all particles */
+#doorToggle:checked ~ .tsunami-container .p {
+  animation: explodeTsunami var(--ds) infinite var(--td) ease-in;
+}
+
+@keyframes explodeTsunami {
+  0% {
+    transform: translate3d(0, 0, -500px) scale(0);
+    opacity: 0;
+  }
+  20% {
+    opacity: 1;
+  }
+  70% {
+    opacity: 1;
+  }
+  100% {
+    transform: translate3d(var(--tx), var(--ty), 800px) scale(15) rotate(45deg);
+    opacity: 0;
+  }
+}
+
+/* 3D Scene Container */
+.scene {
+  perspective: 2000px;
+  position: relative;
+  z-index: 5;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+}
+
+/* The message revealed behind the door */
+.message-box {
+  position: absolute;
+  z-index: 1; /* Behind the door frame */
+  text-align: center;
+  background: rgba(255, 42, 117, 0.05);
+  padding: 3rem 4rem;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 0 50px rgba(255, 42, 117, 0.2), inset 0 0 30px rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(5px);
+  transform: translateZ(-50px);
+  opacity: 0;
+  transition: opacity 2s ease-in-out, transform 2s ease-in-out;
+  transition-delay: 0.5s;
+}
+
+#doorToggle:checked ~ .scene .message-box {
+  opacity: 1;
+  transform: translateZ(0px);
+}
+
+.sparkle-text {
+  font-size: 1.5rem;
+  font-weight: 300;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #ffb3d9;
+  margin-bottom: 0.5rem;
+}
+
+.name-text {
+  font-family: 'Great Vibes', cursive;
+  font-size: 5rem;
+  color: #ff4d94;
+  text-shadow: 0 0 20px rgba(255, 77, 148, 0.6), 0 0 40px rgba(255, 77, 148, 0.4);
+  line-height: 1.2;
+  margin-bottom: 1rem;
+}
+
+.message-box p {
+  font-size: 1.2rem;
+  font-weight: 300;
+  color: #ffd6e8;
+  letter-spacing: 1px;
+}
+
+/* The Door Frame */
+.door-frame {
+  position: absolute;
+  z-index: 2; /* In front of message */
+  width: 320px;
+  height: 500px;
+  border: 15px solid var(--door-border);
+  border-bottom: 0;
+  border-radius: 10px 10px 0 0;
+  background-color: transparent;
+  box-shadow: inset 0 0 50px rgba(0, 0, 0, 0.8), 0 0 70px rgba(255, 42, 117, 0.3);
+  transform-style: preserve-3d;
+}
+
+/* The Door */
+.door {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, var(--door-border) 0%, var(--door-wood) 100%);
+  transform-origin: left;
+  transition: transform 2.5s cubic-bezier(0.19, 1, 0.22, 1), box-shadow 1s ease;
+  transform-style: preserve-3d;
+  cursor: pointer;
+  box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
+  display: flex;
+  flex-wrap: wrap;
+  align-content: space-around;
+  justify-content: center;
+  padding: 10px;
+}
+
+.door:hover {
+  box-shadow: 0 0 30px rgba(255, 42, 117, 0.8), inset 0 0 20px rgba(0,0,0,0.5);
+}
+
+#doorToggle:checked ~ .scene .door-frame .door {
+  transform: rotateY(-110deg);
+  box-shadow: 20px 0 50px rgba(0,0,0,0.5);
+  cursor: default;
+  pointer-events: none; /* Can't click to close */
+}
+
+/* Door Panels */
+.door-panel {
+  width: 40%;
+  height: 40%;
+  border: 3px solid rgba(255, 255, 255, 0.05);
+  background: rgba(0, 0, 0, 0.2);
+  margin: 5%;
+  border-radius: 5px;
+  box-shadow: inset 0 0 10px rgba(0,0,0,0.6);
+}
+
+/* Door Knob */
+.door-knob {
+  position: absolute;
+  top: 50%;
+  right: 20px;
+  width: 25px;
+  height: 25px;
+  background: radial-gradient(circle at 30% 30%, #ffd700, #b8860b);
+  border-radius: 50%;
+  transform: translateY(-50%);
+  box-shadow: 2px 2px 5px rgba(0,0,0,0.5);
+  z-index: 10;
+}
+
+/* Instruction Text floating in front */
+.instruction {
+  position: absolute;
+  bottom: 10%;
+  z-index: 20;
+  font-size: 1.1rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #ff99c2;
+  background: rgba(0,0,0,0.5);
+  padding: 10px 20px;
+  border-radius: 50px;
+  border: 1px solid rgba(255, 153, 194, 0.3);
+  animation: pulse 2s infinite;
+  pointer-events: none;
+  transition: opacity 1s ease;
+}
+
+#doorToggle:checked ~ .scene .instruction {
+  opacity: 0;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); opacity: 0.8; box-shadow: 0 0 10px rgba(255, 153, 194, 0.2); }
+  50% { transform: scale(1.05); opacity: 1; box-shadow: 0 0 20px rgba(255, 153, 194, 0.6); }
+  100% { transform: scale(1); opacity: 0.8; box-shadow: 0 0 10px rgba(255, 153, 194, 0.2); }
+}
+
+/* Boy Doodle Styles */
+.boy-doodle {
+  position: absolute;
+  bottom: 0px; 
+  left: -200px;
+  z-index: 25;
+  cursor: pointer;
+  animation: walkToDoor 3s linear forwards;
+  transition: transform 0.3s;
+}
+
+.boy-doodle:hover {
+  transform: scale(1.05);
+  filter: drop-shadow(0 0 10px rgba(255, 77, 148, 0.8));
+}
+
+@keyframes walkToDoor {
+  to { left: calc(50vw - 320px); } 
+}
+
+/* Leg Walking Animation - stopping after 3s (6 iterations of 0.5s) */
+.boy-svg .leg-left {
+  transform-origin: 50px 130px;
+  animation: walkL 0.5s linear 6;
+}
+.boy-svg .leg-right {
+  transform-origin: 50px 130px;
+  animation: walkR 0.5s linear 6;
+}
+@keyframes walkL {
+  0%, 100% { transform: rotate(0deg); }
+  50% { transform: rotate(20deg); }
+}
+@keyframes walkR {
+  0%, 100% { transform: rotate(0deg); }
+  50% { transform: rotate(-20deg); }
+}
+
+/* Boy Reaction on Click (Door Open) */
+#doorToggle:checked ~ .scene .boy-doodle .arm-left {
+  transform-origin: 50px 75px;
+  transform: rotate(140deg); 
+  transition: transform 0.5s ease;
+}
+#doorToggle:checked ~ .scene .boy-doodle .arm-right {
+  transform-origin: 50px 75px;
+  transform: rotate(-50deg); 
+  transition: transform 0.5s ease;
+}
+#doorToggle:checked ~ .scene .boy-doodle .boy-heart {
+  opacity: 1;
+  animation: heartFloat 2s infinite ease-in-out;
+}
+@keyframes heartFloat {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-5px) scale(1.2); }
+}
+
+.boy-svg {
+  filter: drop-shadow(0 0 5px rgba(255, 77, 148, 0.5));
+}
+#doorToggle:checked ~ .scene .boy-doodle {
+  cursor: default;
+}
